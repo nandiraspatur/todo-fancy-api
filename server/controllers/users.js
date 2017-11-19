@@ -2,15 +2,27 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const jwt = require('jsonwebtoken');
+// require fb
+const FB = require('fb');
+const fb = new FB.Facebook({version: 'v2.11'});
 
-const create = (req, res) => {
-  bcrypt.hash(req.body.password, saltRounds)
+const setAccessToken = (req, res, next) => {
+  FB.setAccessToken(req.headers.accesstokenfb);
+  next()
+}
+
+const create = (req, res, data) => {
+  let newUser = {
+    data: data || req.body
+  }
+  bcrypt.hash(newUser.data.password || data.password, saltRounds)
   .then(hash => {
-    req.body.password = hash
-    let user = new User(req.body)
+
+    newUser.data.password = hash
+    let user = new User(newUser.data)
     User.create(user)
     .then(newUser => {
-      res.send(newUser)
+      tokenGenerate(req, res, newUser)
     })
     .catch(err => {
       res.status(500).send(err)
@@ -25,6 +37,17 @@ const getAll = (req, res) => {
   User.find().populate('task_list')
   .then(users => {
     res.send(users)
+  })
+  .catch(err => {
+    res.status(500).send(err)
+  })
+}
+
+const getOne = (req, res) => {
+  User.findOne({ email: req.userLogin.email}).populate('task_list')
+  .then(user => {
+    user.password = '**********'
+    res.send(user)
   })
   .catch(err => {
     res.status(500).send(err)
@@ -65,35 +88,85 @@ const remove = (req, res) => {
 }
 
 const login = (req, res) => {
-  User.findOne({username:req.body.username})
-  .then(user => {
-    bcrypt.compare(req.body.password, user.password)
-    .then(function(response) {
-      let payload = {
-        username : req.body.username,
-        email : req.body.email,
-        id_facebook : req.body.id_facebook,
-      }
-      let secret = process.env.SECRET_JWT;
-      jwt.sign(payload, secret, function(err, token) {
-          if(!err){
-            req.headers.token = token
-            res.send({token: token});
+  if(req.headers.accesstokenfb) {
+    console.log('masuk api');
+    FB.api(
+      "/me",
+      { fields: 'first_name,last_name,email' },
+      function (response) {
+        User.findOne({ id_facebook: response.id })
+        .then(result => {
+          if(result){
+            console.log('masuk findOne');
+            tokenGenerate(req, res, result)
           }else{
-            res.status(401).send(err)
+            let data = {
+              username: response.email,
+              password: response.email,
+              email: response.email,
+              firstname: response.first_name,
+              lastname: response.last_name,
+              id_facebook: response.id
+            }
+            create(req, res, data)
           }
-        });
-    });
-  })
-  .catch(err => {
-    res.status(401).send(err)
-  })
+        })
+        .catch(err => {
+        })
+      }
+    );
+  }else{
+    console.log('masuk login');
+    console.log(req.body);
+    User.findOne({username:req.body.username})
+    .then(user => {
+      console.log(user);
+      bcrypt.compare(req.body.password, user.password)
+      .then(function(response) {
+        if(response){
+          tokenGenerate(req, res, user)
+        }else{
+          res.status(401).send({errMsg: 'Incorrect username/password'})
+        }
+      });
+    })
+    .catch(err => {
+      res.status(401).send(err)
+    })
+  }
 }
 
+const tokenGenerate = (req, res, data) => {
+  console.log('masuk token');
+  let payload = {
+    id : data.id,
+    username : data.username,
+    email : data.email,
+    id_facebook : data.id_facebook,
+  }
+  let secret = process.env.SECRET_JWT;
+  jwt.sign(payload, secret, function(err, token) {
+    if(!err){
+      req.headers.token = token
+      res.send({accessTokenTodo: token});
+    }else{
+      res.status(401).send(err)
+    }
+  });
+}
+
+
+const logout = (req, res) => {
+  req.headers = {}
+  res.send('You are logged out...')
+}
 module.exports = {
   create,
   getAll,
+  getOne,
   update,
   login,
+  logout,
+  setAccessToken,
   remove
 };

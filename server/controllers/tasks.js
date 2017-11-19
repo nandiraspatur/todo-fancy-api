@@ -1,11 +1,20 @@
 const Task = require('../models/task');
+const User = require('../models/user');
 
 const create = (req, res) => {
-  req.body.status = false;
+  req.body.user_id = req.userLogin.id
   let task = new Task(req.body)
   Task.create(task)
   .then(newTask => {
-    res.send(newTask);
+    User.findById(req.userLogin.id)
+    .then(user => {
+      user.task_list.push(newTask._id)
+      user.save()
+      .then(responseSave => {
+        console.log(responseSave);
+        res.send(newTask);
+      })
+    })
   })
   .catch(err => {
     res.status(500).send(err);

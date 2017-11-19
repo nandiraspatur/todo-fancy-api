@@ -8,7 +8,7 @@ var userSchema = new Schema({
   firstname: { type: String, default: '' },
   lastname: { type: String, default: '' },
   email: { type: String, default: '' },
-  id_facebook: { type: String, default: '' },
+  id_facebook: { type: String, default: null },
   task_list: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Task'
