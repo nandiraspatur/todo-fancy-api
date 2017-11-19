@@ -41,7 +41,10 @@ $(document).ready(function() {
   if(localStorage.getItem('accesstokentodo')){
     getUserData()
     $('#logout').css("display", "block" );
-    $('#login-fb').css("display", "none" );
+    $('#login-button').css("display", "none" );
+  }else{
+    $('#logout').css("display", "none" );
+    $('#login-button').css("display", "block" );
   }
 })
 
@@ -61,19 +64,23 @@ $('#save-task').click(function() {
 
 $('#login-todo').click(function() {
   let userData = {
-    username: $('input[name=username]').val(),
-    password: $('input[name=password]').val()
+    username: $('input#login[name=username]').val(),
+    password: $('input#login[name=password]').val()
   }
   loginTodo(userData);
 })
 
-$('#finishButton').click(function() {
-  var valFinish = $('#id-task:checked').map(function() {return this.value;}).get()
-  var valDelete = $('#delete-task:checked').map(function() {return this.value;}).get()
-  valFinish.forEach(function(v) {
+$('#saveButton').click(function() {
+  var val = $('#id-task:checked').map(function() {return this.value;}).get()
+  $('#content-finish').fadeIn()
+  val.forEach(function(v) {
     finishTask(v)
   })
-  valDelete.forEach(function(v) {
+})
+
+$('#deleteButton').click(function() {
+  var val = $('#id-task:checked').map(function() {return this.value;}).get()
+  val.forEach(function(v) {
     deleteTask(v)
   })
 })
@@ -87,8 +94,8 @@ function logout() {
   axios.get('http://localhost:3000/users/logout')
   .then(response => {
     getUserData()
+    $('#login-button').css("display", "block" );
     $('#logout').css("display", "none" );
-    $('#login-fb').css("display", "block" );
     $('#user-content').html('');
     $('#content').html('');
   })
@@ -112,7 +119,7 @@ function loginTodo(userData) {
       if(response.data){
         localStorage.setItem('accesstokentodo', response.data.accessTokenTodo)
         getUserData()
-        $('#login-fb').css("display", "none" );
+        $('#login-button').css("display", "none" );
         $('#logout').css("display", "block" );
       }else{
         console.log('Incorrect username/password');
@@ -126,6 +133,15 @@ function loginTodo(userData) {
 
 // get data user from server
 function getUserData() {
+  $('#content').html(`<div class="ui icon message">
+  <i class="notched circle loading icon"></i>
+  <div class="content">
+    <div class="header">
+      Just one second
+    </div>
+    <p>We're fetching that content for you.</p>
+  </div>
+</div>`)
   axios.get('http://localhost:3000/users', {
     headers: {
       accesstokenfb: localStorage.accesstokenfb || '',
@@ -135,19 +151,24 @@ function getUserData() {
   .then(function(responseTodo) {
     $('#user-content').html(userHandle(responseTodo.data));
     $('#content').html(taskHandle(responseTodo.data.task_list));
+    $('#content-finish').html(taskFinishHandle(responseTodo.data.task_list));
+    if(localStorage.position == 'taskFinish'){
+      $('#content').css("display", "none" )
+      $('#content-finish').fadeIn()
+    }else{
+      $('#content-finish').css("display", "none" )
+      $('#content').fadeIn()
+    }
   })
   .catch(function(err) {
-    $('#user-content').html('Please login/register');
+    console.log(err);
   })
 }
 
 // handle data user from server convert to html
 function userHandle(dataUser) {
   return `
-    <div>
-      <p>Selamat Datang,</p>
-      <h3>${dataUser.firstname} ${dataUser.lastname}</h3>
-    </div>
+    ${dataUser.firstname} ${dataUser.lastname}
   `
 }
 
@@ -155,14 +176,37 @@ function userHandle(dataUser) {
 function taskHandle(taskData) {
   let tasks = ``
   taskData.forEach(t => {
-    tasks += `
-      <div>
-        <p><b>Task Name :</b> ${t.task_name}</p>
-        <p><b>Status :</b> ${t.status}</p>
-        <input id="id-task" type='checkbox' value="${t._id}">Finish</input>
-        <input id="delete-task" type='checkbox' value="${t._id}">Delete</input>
+    if(!t.status){
+      tasks += `
+      <div class="ui message">
+      <i class="tasks icon"></i>
+      ${t.task_name}
+      <div class="ui toggle checkbox" style="float:right;">
+      <input id="id-task" value="${t._id}" type="checkbox">
+      <label></label>
       </div>
-    `
+      </div>
+      `
+    }
+  })
+  return tasks
+}
+
+function taskFinishHandle(taskData) {
+  let tasks = ``
+  taskData.forEach(t => {
+    if(t.status){
+      tasks += `
+      <div class="ui green message">
+        <i class="checkmark box icon"></i>
+        ${t.task_name}
+        <div class="ui toggle checkbox" style="float:right;">
+          <input id="id-task" value="${t._id}" type="checkbox">
+          <label></label>
+        </div>
+      </div>
+      `
+    }
   })
   return tasks
 }

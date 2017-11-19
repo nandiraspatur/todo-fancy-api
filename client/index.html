@@ -3,32 +3,107 @@
   <head>
     <title>ToDo Fancy VNX</title>
     <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
   </head>
     <body>
-      <div class="login">
-        <input type="text" name="username" placeholder="Username"><br>
-        <input type="password" name="password" placeholder="Password"><br>
-        <button type="button" id="login-todo">Login</button>
-      </div>
-      <div id="login-logout">
-        <button type="button" id="login-fb" name="button">Login FB</button>
-        <button style="display:none;" type="button" id="logout" name="button">logout</button>
-      </div>
-      <div class="menu">
-        <button type="button" id="show-task">Task</button>
-      </div>
-      <div class="task-input">
-        <input type="text" name="task-name" placeholder="Task Name"><br>
-        <button type="button" id="save-task">Save</button>
-      </div>
-      <div id="user-content">
+      <div class="ui centered grid">
+        <div class="eight wide column">
+          <div class="header space-top">
+            <h1>ToDo List Fancy VNX</h1>
+          </div>
+          <div class="ui secondary  menu">
+            <a id="taskList" class="item active">
+              Task List
+            </a>
+            <a id="taskFinish" class="item">
+              Finish List
+            </a>
+            <div class="item">
+              <div class="ui icon input">
+                <input type="text" name="task-name" placeholder="Create New Task..."><br>
+                <i class="add square link icon" id="save-task"></i>
+              </div>
+            </div>
+            <div class="right menu">
+              <div class="item">
+                <div id="login-button">
+                  <button id="login-modal" class="ui primary button left floated">Login</button>
+                  <button id="login-fb" class="ui facebook button right floated">
+                    <i class="facebook icon"></i>
+                    Login
+                  </button>
+                </div>
+                <button id="logout" class="ui negative button">Logout</button>
+              </div>
+            </div>
+          </div>
 
+          <div class="ui fluid grid">
+            <div class="sixteen wide column">
+              <div class="ui message">
+                <i class="close icon"></i>
+                <p>
+                  Welcome!
+                </p>
+                <div class="header">
+                  <span id="user-content"></span>
+                </div>
+              </div>
+            </div>
+            <div class="sixteen wide column center aligned">
+              <div class="row">
+                <button id="saveButton" class="ui primary button">Done</button>
+                <button id="deleteButton" class="ui negative button">Delete</button>
+              </div>
+            </div>
+            <div class="sixteen wide column">
+              <div class="row">
+                <div id="content">
+                </div>
+                <div id="content-finish">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <button id="finishButton">Finish</button>
-      <div id="content">
+      <div class="ui tiny modal">
+        <i class="close icon"></i>
+        <div class="content">
+          <div class="column">
+            <h2 class="ui teal image header">
+              <div class="content">
+                Log-in to your account
+              </div>
+            </h2>
+            <form class="ui large form">
+              <div class="ui stacked segment">
+                <div class="field">
+                  <div class="ui left icon input">
+                    <i class="user icon"></i>
+                    <input id="login" name="username" placeholder="User Name" type="text">
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="ui left icon input">
+                    <i class="lock icon"></i>
+                    <input id="login" name="password" placeholder="Password" type="password">
+                  </div>
+                </div>
+                <div id="login-todo" class="ui facebook button fluid large teal submit button">Login</div><br>
+              </div>
+
+              <div class="ui error message"></div>
+
+            </form>
+          </div>
+        </div>
       </div>
     </body>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="/assets/js/script.js"></script>
+    <script src="/assets/js/style.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
 </html>
