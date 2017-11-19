@@ -42,11 +42,19 @@ $(document).ready(function() {
     getUserData()
     $('#logout').css("display", "block" );
     $('#login-button').css("display", "none" );
+    $('#open-message').html('Wellcome!')
+    $('#action').css("display", "block" );
   }else{
+    $('#action').css("display", "none" );
     $('#logout').css("display", "none" );
     $('#login-button').css("display", "block" );
+    $('#open-message').html('Wellcome to TODO List Fancy API Web Page...')
   }
 })
+
+$("#id-task").dblclick(function() {
+  alert( "Hello World!" );
+});
 
 $('#login-fb').click(function() {
   loginFb()
@@ -98,6 +106,8 @@ function logout() {
     $('#logout').css("display", "none" );
     $('#user-content').html('');
     $('#content').html('');
+    $('#action').css("display", "none" );
+    $('#content-finish').html('');
   })
   .catch(err => {
     console.log(err);
@@ -119,6 +129,7 @@ function loginTodo(userData) {
       if(response.data){
         localStorage.setItem('accesstokentodo', response.data.accessTokenTodo)
         getUserData()
+        $('#action').css("display", "block" );
         $('#login-button').css("display", "none" );
         $('#logout').css("display", "block" );
       }else{

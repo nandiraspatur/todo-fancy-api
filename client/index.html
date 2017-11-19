@@ -10,7 +10,7 @@
       <div class="ui centered grid">
         <div class="eight wide column">
           <div class="header space-top">
-            <h1>ToDo List Fancy VNX</h1>
+            <h1 id="tes">ToDo List Fancy VNX</h1>
           </div>
           <div class="ui secondary  menu">
             <a id="taskList" class="item active">
@@ -43,7 +43,7 @@
             <div class="sixteen wide column">
               <div class="ui message">
                 <i class="close icon"></i>
-                <p>
+                <p id="open-message">
                   Welcome!
                 </p>
                 <div class="header">
@@ -52,7 +52,7 @@
               </div>
             </div>
             <div class="sixteen wide column center aligned">
-              <div class="row">
+              <div id="action" class="row">
                 <button id="saveButton" class="ui primary button">Done</button>
                 <button id="deleteButton" class="ui negative button">Delete</button>
               </div>
@@ -72,7 +72,7 @@
         <i class="close icon"></i>
         <div class="content">
           <div class="column">
-            <h2 class="ui teal image header">
+            <h2 class="ui image header">
               <div class="content">
                 Log-in to your account
               </div>
@@ -91,7 +91,7 @@
                     <input id="login" name="password" placeholder="Password" type="password">
                   </div>
                 </div>
-                <div id="login-todo" class="ui facebook button fluid large teal submit button">Login</div><br>
+                <div id="login-todo" class="ui facebook button fluid large submit button">Login</div><br>
               </div>
 
               <div class="ui error message"></div>
