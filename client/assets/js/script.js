@@ -38,9 +38,8 @@ function loginFb() {
 
 // jQuery---------------------------------------
 $(document).ready(function() {
-  console.log(localStorage);
   if(localStorage.getItem('accesstokentodo')){
-    loginTodo('')
+    getUserData()
     $('#logout').css("display", "block" );
     $('#login-fb').css("display", "none" );
   }
@@ -52,10 +51,6 @@ $('#login-fb').click(function() {
 
 $('#logout').click(function() {
   logout()
-})
-
-$('#show-task').click(function() {
-  getTask()
 })
 
 $('#save-task').click(function() {
@@ -71,6 +66,17 @@ $('#login-todo').click(function() {
   }
   loginTodo(userData);
 })
+
+$('#finishButton').click(function() {
+  var valFinish = $('#id-task:checked').map(function() {return this.value;}).get()
+  var valDelete = $('#delete-task:checked').map(function() {return this.value;}).get()
+  valFinish.forEach(function(v) {
+    finishTask(v)
+  })
+  valDelete.forEach(function(v) {
+    deleteTask(v)
+  })
+})
 // jQuery---------------------------------------
 
 
@@ -80,10 +86,11 @@ function logout() {
   localStorage.clear()
   axios.get('http://localhost:3000/users/logout')
   .then(response => {
-    console.log(response);
     getUserData()
     $('#logout').css("display", "none" );
     $('#login-fb').css("display", "block" );
+    $('#user-content').html('');
+    $('#content').html('');
   })
   .catch(err => {
     console.log(err);
@@ -97,7 +104,7 @@ function loginTodo(userData) {
       password: userData.password || ''
     },{
       headers: {
-        accesstokenfb: localStorage.getItem('accesstokenfb') || ''
+        accesstokenfb: localStorage.accesstokenfb || '',
       }
   })
   .then(function(response) {
@@ -121,13 +128,13 @@ function loginTodo(userData) {
 function getUserData() {
   axios.get('http://localhost:3000/users', {
     headers: {
-      accesstokenfb: localStorage.getItem('accesstokenfb') || '',
-      accesstokentodo: localStorage.getItem('accesstokentodo')
+      accesstokenfb: localStorage.accesstokenfb || '',
+      accesstokentodo: localStorage.accesstokentodo
     }
   })
   .then(function(responseTodo) {
-    console.log(responseTodo);
     $('#user-content').html(userHandle(responseTodo.data));
+    $('#content').html(taskHandle(responseTodo.data.task_list));
   })
   .catch(function(err) {
     $('#user-content').html('Please login/register');
@@ -136,30 +143,12 @@ function getUserData() {
 
 // handle data user from server convert to html
 function userHandle(dataUser) {
-  console.log(dataUser);
   return `
     <div>
       <p>Selamat Datang,</p>
       <h3>${dataUser.firstname} ${dataUser.lastname}</h3>
     </div>
   `
-}
-
-// get data tasks list from server
-function getTask() {
-  axios.get('http://localhost:3000/task', {
-    headers: {
-      accesstokenfb: localStorage.getItem('accesstokenfb'),
-      accesstokentodo: localStorage.getItem('accesstokentodo')
-    }
-  })
-  .then(response => {
-    $('#content').html(taskHandle(response.data))
-  })
-  .catch(err => {
-    $('#content').html('Please login/register..')
-    console.log(err);
-  })
 }
 
 // handle data task from server convert to html
@@ -170,6 +159,8 @@ function taskHandle(taskData) {
       <div>
         <p><b>Task Name :</b> ${t.task_name}</p>
         <p><b>Status :</b> ${t.status}</p>
+        <input id="id-task" type='checkbox' value="${t._id}">Finish</input>
+        <input id="delete-task" type='checkbox' value="${t._id}">Delete</input>
       </div>
     `
   })
@@ -182,15 +173,55 @@ function saveNewTask(input) {
     task_name: input
     }, {
     headers: {
-      accesstokenfb: localStorage.getItem('accesstokenfb'),
-      accesstokentodo: localStorage.getItem('accesstokentodo')
+      accesstokenfb: localStorage.accesstokenfb,
+      accesstokentodo: localStorage.accesstokentodo
     }
   })
   .then(response => {
+    getUserData()
     console.log(response);
   })
   .catch(err => {
     console.log(err);
   })
+}
+
+// Set task finished
+function finishTask(idTask) {
+  if(idTask){
+    axios.put(`http://localhost:3000/task/done/${idTask}`, {}, {
+      headers: {
+        accesstokenfb: localStorage.accesstokenfb,
+        accesstokentodo: localStorage.accesstokentodo
+      }
+    })
+    .then(response => {
+      getUserData()
+      console.log(response);
+    })
+    .catch(err => {
+      console.log(err);
+    })
+
+  }
+}
+
+// delete task
+function deleteTask(idTask) {
+  if(idTask){
+    axios.delete(`http://localhost:3000/task/${idTask}`, {
+      headers: {
+        accesstokenfb: localStorage.accesstokenfb,
+        accesstokentodo: localStorage.accesstokentodo
+      }
+    })
+    .then(response => {
+      getUserData()
+      console.log(response);
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  }
 }
 // javascript---------------------------------------

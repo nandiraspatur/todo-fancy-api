@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/user')
 
 const login = (req, res, next) => {
   let secret = process.env.SECRET_JWT
@@ -13,6 +14,21 @@ const login = (req, res, next) => {
   });
 }
 
+const isOwnTask = (req, res, next) => {
+  User.findById(req.userLogin.id)
+  .then(user => {
+    user.task_list.forEach(t => {
+      if(t == req.params.id){
+        next()
+      }
+    })
+  })
+  .catch(err => {
+    console.log(err);
+  })
+}
+
 module.exports = {
-  login
+  login,
+  isOwnTask
 };

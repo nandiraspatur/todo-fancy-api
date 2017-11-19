@@ -48,9 +48,13 @@ const update = (req, res) => {
 }
 
 const done = (req, res) => {
-  res.findById(req.params.id)
+  Task.findById(req.params.id)
   .then(task => {
-    task.status = true
+    if(task.status){
+      task.status = false
+    }else{
+      task.status = true
+    }
 
     task.save()
     .then(taskDone => {
@@ -65,11 +69,19 @@ const done = (req, res) => {
 const remove = (req, res) => {
   Task.findByIdAndRemove(req.params.id)
   .then(task => {
-    let deletedTask = {
-      status : 'deleted',
-      data : task
-    }
-    res.send(deletedTask)
+    User.findById(req.userLogin.id)
+    .then(user => {
+      user.task_list.forEach((t,i) => {
+        if(t == task._id){
+          user.task_list.splice(i, 1)
+        }
+      })
+      let deletedTask = {
+        status : 'deleted',
+        data : task
+      }
+      res.send(deletedTask)
+    })
   })
   .catch(err => {
     res.status(500).send(err)
