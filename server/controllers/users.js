@@ -148,7 +148,7 @@ const tokenGenerate = (req, res, data) => {
   jwt.sign(payload, secret, function(err, token) {
     if(!err){
       req.headers.token = token
-      res.send({accessTokenTodo: token});
+      res.send({accesstokentodo: token});
     }else{
       res.status(401).send(err)
     }

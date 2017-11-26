@@ -5,105 +5,101 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.css">
     <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
+    <script>
+    if(!localStorage.getItem('accesstokentodo')){
+      window.location.replace("http://localhost:8080/login.html")
+    }
+    </script>
   </head>
     <body>
-      <div class="ui centered grid">
-        <div class="eight wide column">
-          <div class="header space-top">
-            <h1 id="tes">ToDo List Fancy VNX</h1>
-          </div>
-          <div class="ui secondary  menu">
-            <a id="taskList" class="item active">
-              Task List
-            </a>
-            <a id="taskFinish" class="item">
-              Finish List
-            </a>
-            <div class="item">
-              <div class="ui icon input">
-                <input type="text" name="task-name" placeholder="Create New Task..."><br>
-                <i class="add square link icon" id="save-task"></i>
-              </div>
+      <div id="vnx">
+        <div class="ui grid centered">
+          <div class="ten wide column">
+            <div class="ui header space-top">
+              <h1>TODO Fancy VNX</h1>
             </div>
-            <div class="right menu">
-              <div class="item">
-                <div id="login-button">
-                  <button id="login-modal" class="ui primary button left floated">Login</button>
-                  <button id="login-fb" class="ui facebook button right floated">
-                    <i class="facebook icon"></i>
-                    Login
-                  </button>
-                </div>
-                <button id="logout" class="ui negative button">Logout</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="ui fluid grid">
-            <div class="sixteen wide column">
-              <div class="ui message">
-                <i class="close icon"></i>
-                <p id="open-message">
-                  Welcome!
-                </p>
-                <div class="header">
-                  <span id="user-content"></span>
+            <div class="ui container">
+              <div class="ui pointing menu">
+                <a id="incomplete" class="active item" @click="showIncomplete">
+                  Incomplete
+                </a>
+                <a id="completed" class="item" @click="showCompleted">
+                  Completed
+                </a>
+                <div class="right menu">
+                  <div class="item">
+                    Halo, {{fullname}}
+                  </div>
+                  <a class="item" @click="logout">
+                    Logout
+                  </a>
                 </div>
               </div>
-            </div>
-            <div class="sixteen wide column center aligned">
-              <div id="action" class="row">
-                <button id="saveButton" class="ui primary button">Done</button>
-                <button id="deleteButton" class="ui negative button">Delete</button>
-              </div>
-            </div>
-            <div class="sixteen wide column">
-              <div class="row">
-                <div id="content">
+              <div class="ui segment">
+                <div class="ui dropdown">
+                  <div class="text">Option</div>
+                  <i class="dropdown icon"></i>
+                  <div class="menu">
+                    <div class="item" @click="setTaskCompleted">
+                      <i class="checkmark box icon"></i>
+                      <span id="buttonAction">Completed</span>
+                    </div>
+                    <div class="item" @click="deleteTask">
+                      <i class="trash icon"></i>
+                      Move to trash
+                    </div>
+                    <div class="divider"></div>
+                    <div class="item">
+                      <i class="download icon"></i>
+                      Download As PDF
+                    </div>
+                  </div>
                 </div>
-                <div id="content-finish">
+                <div class="divider"></div>
+                <div class="ui segment">
+                  <div class="ui action input right aligned fluid">
+                    <input placeholder="Add New Task" type="text" v-model="newTask">
+                    <button class="ui button blue" @click="newTaskSave">Add Task</button>
+                  </div>
+                  <table class="ui table">
+                    <tbody>
+                      <div class="ui relaxed divided list" v-if="showTask == false">
+                        <task-list v-for="(task,i) in taskListIn" :key="i" :task_list="task" v-on:selected-task="addSelectTask($event)"/>
+                      </div>
+                      <div class="ui relaxed divided list" v-else>
+                        <task-list v-for="(task,i) in taskListCom" :key="i" :task_list="task" v-on:selected-task="addSelectTask($event)"/>
+                      </div>
+                    </tbody>
+                    <tfoot>
+                      <tr></tr>
+                      <tr>
+                        <td class="right aligned">
+                          <div class="ui label blue">
+                            Task
+                            <div class="detail">{{taskListIn.length}}</div>
+                          </div>
+                          <div class="ui label blue">
+                            Completed
+                            <div class="detail">{{taskListCom.length}}</div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="ui tiny modal">
-        <i class="close icon"></i>
-        <div class="content">
-          <div class="column">
-            <h2 class="ui image header">
-              <div class="content">
-                Log-in to your account
-              </div>
-            </h2>
-            <form class="ui large form">
-              <div class="ui stacked segment">
-                <div class="field">
-                  <div class="ui left icon input">
-                    <i class="user icon"></i>
-                    <input id="login" name="username" placeholder="User Name" type="text">
-                  </div>
-                </div>
-                <div class="field">
-                  <div class="ui left icon input">
-                    <i class="lock icon"></i>
-                    <input id="login" name="password" placeholder="Password" type="password">
-                  </div>
-                </div>
-                <div id="login-todo" class="ui facebook button fluid large submit button">Login</div><br>
-              </div>
 
-              <div class="ui error message"></div>
-
-            </form>
-          </div>
-        </div>
-      </div>
+      <script src="https://unpkg.com/vue"></script>
+      <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+      <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+      <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
+      <script src="/assets/js/vue/vue-task.js"></script>
+      <script src="/assets/js/vue/vue-parent.js"></script>
+      <script src="/assets/js/script.js"></script>
     </body>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="/assets/js/script.js"></script>
-    <script src="/assets/js/style.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
 </html>
