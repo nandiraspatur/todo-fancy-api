@@ -40,7 +40,59 @@
             <div class="ui error message"></div>
           </form>
           <div class="ui message">
-            New to us? <a href="#">Sign Up</a>
+            New to us? <a href="#" @click="signupModal">Sign Up</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="ui basic modal">
+        <div class="ui active dimmer">
+          <div class="ui loader"></div>
+        </div>
+      </div>
+
+      <div class="ui tiny modal">
+        <i class="close icon"></i>
+        <div class="header">
+          Profile Picture
+        </div>
+        <div class="ui grid centered">
+          <div class="fourteen wide column">
+            <form class="ui large form">
+              <div class="ui stacked segment">
+                <div class="field">
+                  <label>Username</label>
+                  <input name="username" placeholder="Username" type="text" v-model="username">
+                </div>
+                <div class="field">
+                  <label>Password</label>
+                  <input name="password" placeholder="Password" type="password" v-model="password">
+                </div>
+                <div class="two fields">
+                  <div class="field">
+                    <label>First Name</label>
+                    <input name="firstname" placeholder="First Name" type="text" v-model="firstname">
+                  </div>
+                  <div class="field">
+                    <label>Last Name</label>
+                    <input name="lastname" placeholder="Last Name" type="text" v-model="lastname">
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Email</label>
+                  <input name="email" placeholder="Email" type="text" v-model="email">
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="actions">
+          <div class="ui black deny button">
+            Cancel
+          </div>
+          <div class="ui positive right labeled icon button" @click="signup">
+            Signup
+            <i class="checkmark icon"></i>
           </div>
         </div>
       </div>

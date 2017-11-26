@@ -5,13 +5,17 @@ var app = new Vue({
     taskListCom: '',
     showTask: false,
     fullname: '',
-    username: '',
-    password: '',
     newTask: '',
     selectedTask: [],
+    username: '',
+    password: '',
+    firstname: '',
+    lastname: '',
+    email: '',
   },
   created: function() {
-    if(localStorage.accesstokentodo){
+    console.log(localStorage.getItem('accesstokentodo'));
+    if(localStorage.getItem('accesstokentodo')){
       axios.get('http://localhost:3000/users',
       {
         headers: {
@@ -45,8 +49,9 @@ var app = new Vue({
       })
       .then(response => {
         localStorage.setItem('accesstokentodo', response.data.accesstokentodo)
-        window.location.replace("http://localhost:8080")
+        window.location.replace('http://localhost:8080')
       })
+      .catch(err => console.log(err))
     },
     newTaskSave: function() {
       axios.post('http://localhost:3000/task',{
@@ -112,6 +117,30 @@ var app = new Vue({
         .catch(err => console.log(err))
       })
       window.location.reload()
+    },
+    signupModal: function() {
+      $('.ui.tiny.modal')
+        .modal('show')
+      ;
+    },
+    signup: function() {
+      $('.ui.basic.modal')
+        .modal('show')
+      ;
+      var userData = {
+        username: this.username,
+        password: this.password,
+        firstname: this.firstname,
+        lastname: this.lastname,
+        email: this.email
+      }
+      axios.post('http://localhost:3000/users/register', userData)
+      .then(response => {
+        $('.ui.basic.modal')
+          .modal('hide')
+        ;
+      })
+      .catch(err => console.log(err))
     }
   }
 })

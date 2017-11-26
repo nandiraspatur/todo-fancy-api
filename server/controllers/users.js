@@ -13,22 +13,24 @@ const setAccessToken = (req, res, next) => {
 
 const create = (req, res, data) => {
   let newUser = {
-    data: data || req.body
+    data: req.body
   }
+  console.log(newUser);
   bcrypt.hash(newUser.data.password || data.password, saltRounds)
   .then(hash => {
-
     newUser.data.password = hash
     let user = new User(newUser.data)
     User.create(user)
     .then(newUser => {
-      tokenGenerate(req, res, newUser)
+      res.send(newUser)
     })
     .catch(err => {
+      console.log(err);
       res.status(500).send(err)
     })
   })
   .catch(err => {
+    console.log(err);
     res.status(500).send(err)
   })
 }
