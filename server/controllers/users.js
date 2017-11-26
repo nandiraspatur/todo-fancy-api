@@ -11,18 +11,19 @@ const setAccessToken = (req, res, next) => {
   next()
 }
 
-const create = (req, res, data) => {
+const create = (req, res) => {
+  console.log('masuk ga ya');
   let newUser = {
-    data: req.body
+    data: req.tempUser || req.body
   }
-  console.log(newUser);
-  bcrypt.hash(newUser.data.password || data.password, saltRounds)
+  console.log('isi new user ',newUser);
+  bcrypt.hash(newUser.data.password || req.tempUser.password, saltRounds)
   .then(hash => {
     newUser.data.password = hash
     let user = new User(newUser.data)
     User.create(user)
     .then(newUser => {
-      res.send(newUser)
+      tokenGenerate(req, res, newUser)
     })
     .catch(err => {
       console.log(err);
@@ -89,7 +90,7 @@ const remove = (req, res) => {
   })
 }
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   if(req.headers.accesstokenfb) {
     console.log('masuk api');
     FB.api(
@@ -110,7 +111,9 @@ const login = (req, res) => {
               lastname: response.last_name,
               id_facebook: response.id
             }
-            create(req, res, data)
+            req.tempUser = data
+            console.log(req.tempUser);
+            create(req, res, next)
           }
         })
         .catch(err => {

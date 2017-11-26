@@ -14,7 +14,6 @@ var app = new Vue({
     email: '',
   },
   created: function() {
-    console.log(localStorage.getItem('accesstokentodo'));
     if(localStorage.getItem('accesstokentodo')){
       axios.get('http://localhost:3000/users',
       {
@@ -42,16 +41,29 @@ var app = new Vue({
     }
   },
   methods: {
-    loginTodo: function() {
+    loginTodo: function(input) {
+      $('.ui.basic.modal')
+        .modal('show')
+      ;
       axios.post('http://localhost:3000/users/login',{
-        username: this.username,
-        password: this.password
+        username: this.username || '',
+        password: this.password || ''
+      },{
+        headers: {
+          accesstokenfb: localStorage.getItem('accesstokenfb') || '',
+        }
       })
       .then(response => {
         localStorage.setItem('accesstokentodo', response.data.accesstokentodo)
         window.location.replace('http://localhost:8080')
       })
       .catch(err => console.log(err))
+    },
+    loginFb: () => {
+      var self = this
+      FB.login(response => {
+        statusChangeCallback(response)
+      },{scope: 'public_profile,email'});
     },
     newTaskSave: function() {
       axios.post('http://localhost:3000/task',{
@@ -139,6 +151,8 @@ var app = new Vue({
         $('.ui.basic.modal')
           .modal('hide')
         ;
+        localStorage.setItem('accesstokentodo', response.data.accesstokentodo)
+        window.location.replace('http://localhost:8080')
       })
       .catch(err => console.log(err))
     }

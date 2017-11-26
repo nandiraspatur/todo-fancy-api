@@ -34,7 +34,12 @@
                   <input name="password" placeholder="Password" type="password" v-model="password">
                 </div>
               </div>
-              <div class="ui fluid large blue submit button" @click="loginTodo">Login</div>
+              <div class="ui fluid large blue button" @click="loginTodo">Login</div>
+              <br>
+              <div class="ui fluid large facebook button" @click="loginFb">
+                <i class="facebook icon"></i>
+                Login with Facebook
+              </div>
             </div>
 
             <div class="ui error message"></div>
@@ -102,6 +107,7 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
     <script src="https://unpkg.com/vue"></script>
+    <script src="/assets/js/script.js"></script>
     <script src="/assets/js/vue/vue-task.js"></script>
     <script src="/assets/js/vue/vue-parent.js"></script>
   </body>

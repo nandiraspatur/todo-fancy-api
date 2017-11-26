@@ -7,7 +7,7 @@ router.get('/all', checkAuth.login, users.getAll)
 router.get('/', checkAuth.login, users.getOne)
 router.post('/login', users.setAccessToken, users.login)
 router.get('/logout', users.logout)
-router.post('/register', users.setAccessToken, users.create)
+router.post('/register', users.create)
 router.put('/:id', checkAuth.login, users.update)
 router.delete('/:id', checkAuth.login, users.remove)
 
