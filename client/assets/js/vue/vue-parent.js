@@ -18,7 +18,7 @@ var app = new Vue({
       $('.ui.basic.modal')
         .modal('show')
       ;
-      axios.get('http://todo.api.bhinfinix.com/users',
+      axios.get('http://localhost:3000/users',
       {
         headers: {
           accesstokentodo: localStorage.getItem('accesstokentodo')
@@ -51,7 +51,7 @@ var app = new Vue({
       $('.ui.basic.modal')
         .modal('show')
       ;
-      axios.post('http://todo.api.bhinfinix.com/users/login',{
+      axios.post('http://localhost:3000/users/login',{
         username: this.username || '',
         password: this.password || ''
       },{
@@ -62,7 +62,7 @@ var app = new Vue({
       .then(response => {
         localStorage.setItem('accesstokentodo', response.data.accesstokentodo)
         if(localStorage.getItem('accesstokentodo')){
-          axios.get('http://todo.api.bhinfinix.com/users',
+          axios.get('http://localhost:3000/users',
           {
             headers: {
               accesstokentodo: localStorage.getItem('accesstokentodo')
@@ -100,7 +100,7 @@ var app = new Vue({
       $('.ui.basic.modal')
         .modal('show')
       ;
-      axios.post('http://todo.api.bhinfinix.com/task',{
+      axios.post('http://localhost:3000/task',{
         task_name: this.newTask
       },{
         headers: {
@@ -119,7 +119,7 @@ var app = new Vue({
     logout: function() {
       localStorage.clear()
       this.fullname = ''
-      axios.get('http://todo.api.bhinfinix.com/users/logout')
+      axios.get('http://localhost:3000/users/logout')
       .then(response => {
         window.location.replace("http://localhost:8080/login.html")
       })
@@ -145,7 +145,7 @@ var app = new Vue({
         .modal('show')
       ;
       this.selectedTask.forEach(t => {
-        axios.put(`http://todo.api.bhinfinix.com/task/done/${t}`,{},{
+        axios.put(`http://localhost:3000/task/done/${t}`,{},{
           headers: {
             accesstokentodo: localStorage.getItem('accesstokentodo')
           }
@@ -164,7 +164,7 @@ var app = new Vue({
       this.selectedTask.forEach((t, i) => {
         console.log(i)
         console.log(this.selectedTask.length)
-        axios.delete(`http://todo.api.bhinfinix.com/task/${t}`,{
+        axios.delete(`http://localhost:3000/task/${t}`,{
           headers: {
             accesstokentodo: localStorage.getItem('accesstokentodo')
           }
@@ -197,7 +197,7 @@ var app = new Vue({
         lastname: this.lastname,
         email: this.email
       }
-      axios.post('http://todo.api.bhinfinix.com/users/register', userData)
+      axios.post('http://localhost:3000/users/register', userData)
       .then(response => {
         $('.ui.basic.modal')
           .modal('hide')
