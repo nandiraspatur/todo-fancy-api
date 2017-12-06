@@ -31,3 +31,5 @@ npm run dev</pre>
 Add your ``<secret key>`` to ```.env_template``` and rename file to ```.env``` before use this API
 
 Access the website via ```/client/index.html``` or API via ```http://localhost:3000/api```.
+
+TODO Fancy VNX ``http://todo.nandiraspatur.tk``.

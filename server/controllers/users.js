@@ -47,7 +47,7 @@ const getAll = (req, res) => {
 }
 
 const getOne = (req, res) => {
-  User.findOne({ email: req.userLogin.email}).populate('task_list')
+  User.findOne({ username: req.userLogin.username}).populate('task_list')
   .then(user => {
     user.password = '**********'
     res.send(user)

@@ -1,8 +1,8 @@
 var app = new Vue({
   el: '#vnx',
   data: {
-    taskListIn: '',
-    taskListCom: '',
+    taskListIn: [],
+    taskListCom: [],
     showTask: false,
     fullname: '',
     newTask: '',
@@ -15,7 +15,10 @@ var app = new Vue({
   },
   created: function() {
     if(localStorage.getItem('accesstokentodo')){
-      axios.get('http://localhost:3000/users',
+      $('.ui.basic.modal')
+        .modal('show')
+      ;
+      axios.get('http://todo.api.bhinfinix.com/users',
       {
         headers: {
           accesstokentodo: localStorage.getItem('accesstokentodo')
@@ -23,6 +26,9 @@ var app = new Vue({
       }
     )
     .then(response => {
+      $('.ui.basic.modal')
+        .modal('hide')
+      ;
       var task = response.data.task_list
       var completed = []
       var incomplete = []
@@ -45,7 +51,7 @@ var app = new Vue({
       $('.ui.basic.modal')
         .modal('show')
       ;
-      axios.post('http://localhost:3000/users/login',{
+      axios.post('http://todo.api.bhinfinix.com/users/login',{
         username: this.username || '',
         password: this.password || ''
       },{
@@ -55,7 +61,32 @@ var app = new Vue({
       })
       .then(response => {
         localStorage.setItem('accesstokentodo', response.data.accesstokentodo)
-        window.location.replace('http://localhost:8080')
+        if(localStorage.getItem('accesstokentodo')){
+          axios.get('http://todo.api.bhinfinix.com/users',
+          {
+            headers: {
+              accesstokentodo: localStorage.getItem('accesstokentodo')
+            }
+          }
+        )
+        .then(response => {
+          var task = response.data.task_list
+          var completed = []
+          var incomplete = []
+          task.forEach(t => {
+            if(t.status == true){
+              completed.push(t)
+            }else{
+              incomplete.push(t)
+            }
+          })
+          this.taskListIn = incomplete;
+          this.taskListCom = completed;
+          this.fullname = `${response.data.firstname} ${response.data.lastname}`
+          window.location.replace('http://localhost:8080')
+        })
+        .catch(err => console.log(err))
+      }
       })
       .catch(err => console.log(err))
     },
@@ -66,7 +97,10 @@ var app = new Vue({
       },{scope: 'public_profile,email'});
     },
     newTaskSave: function() {
-      axios.post('http://localhost:3000/task',{
+      $('.ui.basic.modal')
+        .modal('show')
+      ;
+      axios.post('http://todo.api.bhinfinix.com/task',{
         task_name: this.newTask
       },{
         headers: {
@@ -74,6 +108,9 @@ var app = new Vue({
         }
       })
       .then(response => {
+        $('.ui.basic.modal')
+          .modal('hide')
+        ;
         this.taskListIn.push(response.data);
         this.newTask = ''
       })
@@ -81,7 +118,8 @@ var app = new Vue({
     },
     logout: function() {
       localStorage.clear()
-      axios.get('http://localhost:3000/users/logout')
+      this.fullname = ''
+      axios.get('http://todo.api.bhinfinix.com/users/logout')
       .then(response => {
         window.location.replace("http://localhost:8080/login.html")
       })
@@ -103,32 +141,45 @@ var app = new Vue({
       this.selectedTask.push(selectedTask)
     },
     setTaskCompleted: function() {
+      $('.ui.basic.modal')
+        .modal('show')
+      ;
       this.selectedTask.forEach(t => {
-        axios.put(`http://localhost:3000/task/done/${t}`,{},{
+        axios.put(`http://todo.api.bhinfinix.com/task/done/${t}`,{},{
           headers: {
             accesstokentodo: localStorage.getItem('accesstokentodo')
           }
         })
-        .then(response => {
+        .then(({data}) => {
           console.log('Completed');
+          window.location.reload()
         })
         .catch(err => console.log(err))
       })
-      window.location.reload()
     },
     deleteTask: function() {
-      this.selectedTask.forEach(t => {
-        axios.delete(`http://localhost:3000/task/${t}`,{
+      $('.ui.basic.modal')
+        .modal('show')
+      ;
+      this.selectedTask.forEach((t, i) => {
+        console.log(i)
+        console.log(this.selectedTask.length)
+        axios.delete(`http://todo.api.bhinfinix.com/task/${t}`,{
           headers: {
             accesstokentodo: localStorage.getItem('accesstokentodo')
           }
         })
         .then(response => {
-          console.log('Deleted');
+          $('.ui.basic.modal')
+          .modal('hide')
+          ;
         })
         .catch(err => console.log(err))
+        if(i == this.selectedTask.length-1){
+          console.log('Deleted');
+          window.location.reload()
+        }
       })
-      window.location.reload()
     },
     signupModal: function() {
       $('.ui.tiny.modal')
@@ -146,7 +197,7 @@ var app = new Vue({
         lastname: this.lastname,
         email: this.email
       }
-      axios.post('http://localhost:3000/users/register', userData)
+      axios.post('http://todo.api.bhinfinix.com/users/register', userData)
       .then(response => {
         $('.ui.basic.modal')
           .modal('hide')
